@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   const completedTopics = phaseProgress.completedTopics ?? [];
   const phaseComplete = phaseProgress.phaseComplete ?? false;
@@ -10,7 +10,10 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
     const checked = e.target.checked;
     // Mark all topics complete when phase is checked
     const newCompleted = checked ? phase.topics.map((t) => t.id) : [];
-    onChange(phase.id, { phaseComplete: checked, completedTopics: newCompleted });
+    onChange(phase.id, {
+      phaseComplete: checked,
+      completedTopics: newCompleted,
+    });
   }
 
   function handleTopicCheck(topicId, checked) {
@@ -25,13 +28,16 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
     phase.topics.length > 0
       ? Math.round((completedTopics.length / phase.topics.length) * 100)
       : phaseComplete
-      ? 100
-      : 0;
+        ? 100
+        : 0;
 
   return (
-    <div className={`phase-card ${phaseComplete ? 'phase-complete' : ''}`}>
+    <div className={`phase-card ${phaseComplete ? "phase-complete" : ""}`}>
       <div className="phase-header" onClick={() => setExpanded((v) => !v)}>
-        <label className="phase-checkbox-label" onClick={(e) => e.stopPropagation()}>
+        <label
+          className="phase-checkbox-label"
+          onClick={(e) => e.stopPropagation()}
+        >
           <input
             type="checkbox"
             checked={phaseComplete}
@@ -40,7 +46,8 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
         </label>
         <div className="phase-header-text">
           <span className="phase-title">
-            {expanded ? '▾' : '▸'} Phase {phase.id.replace('phase-', '')}: {phase.title}
+            {expanded ? "▾" : "▸"} Phase {phase.id.replace("phase-", "")}:{" "}
+            {phase.title}
           </span>
           <span className="phase-weeks">{phase.weeks}</span>
         </div>
@@ -63,12 +70,17 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
                 {phase.topics.map((topic) => {
                   const checked = completedTopics.includes(topic.id);
                   return (
-                    <li key={topic.id} className={`topic-item ${checked ? 'done' : ''}`}>
+                    <li
+                      key={topic.id}
+                      className={`topic-item ${checked ? "done" : ""}`}
+                    >
                       <label>
                         <input
                           type="checkbox"
                           checked={checked}
-                          onChange={(e) => handleTopicCheck(topic.id, e.target.checked)}
+                          onChange={(e) =>
+                            handleTopicCheck(topic.id, e.target.checked)
+                          }
                         />
                         {topic.text}
                       </label>
@@ -112,23 +124,33 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
               <span className="section-label">🧠 Architect Skills</span>
               <ul className="topic-list">
                 {phase.architectSkills.map((skill, idx) => (
-                  <li key={`as-${idx}`} className="topic-item">{skill}</li>
+                  <li key={`as-${idx}`} className="topic-item">
+                    {skill}
+                  </li>
                 ))}
               </ul>
             </div>
           )}
 
-          {(phase.smallProject || phase.mediumProject || phase.ambitiousProject) && (
+          {(phase.smallProject ||
+            phase.mediumProject ||
+            phase.ambitiousProject) && (
             <div className="phase-section">
               <span className="section-label">💡 Project Ideas</span>
               {phase.smallProject && (
-                <p><strong>Small:</strong> {phase.smallProject}</p>
+                <p>
+                  <strong>Small:</strong> {phase.smallProject}
+                </p>
               )}
               {phase.mediumProject && (
-                <p><strong>Medium:</strong> {phase.mediumProject}</p>
+                <p>
+                  <strong>Medium:</strong> {phase.mediumProject}
+                </p>
               )}
               {phase.ambitiousProject && (
-                <p><strong>Ambitious:</strong> {phase.ambitiousProject}</p>
+                <p>
+                  <strong>Ambitious:</strong> {phase.ambitiousProject}
+                </p>
               )}
             </div>
           )}
@@ -145,7 +167,9 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
               <span className="section-label">📚 Resources</span>
               <ul className="topic-list">
                 {phase.resources.map((r, idx) => (
-                  <li key={`res-${idx}`} className="topic-item">{r}</li>
+                  <li key={`res-${idx}`} className="topic-item">
+                    {r}
+                  </li>
                 ))}
               </ul>
             </div>

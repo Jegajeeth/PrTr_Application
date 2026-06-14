@@ -3,14 +3,11 @@ using ProgressTracker.Models;
 
 namespace ProgressTracker;
 
-public static class PlanParser
+public static partial class PlanParser
 {
     // Matches the LAST (…) group on the line as weeks — handles titles like
     // "Infrastructure as Code (IaC) & Automation (Weeks 15–18)"
-    private static readonly Regex PhaseHeaderRegex = new(
-        @"PHASE\s+(\d+):\s*(.+)\s+\(([^)]+)\)\s*$",
-        RegexOptions.IgnoreCase | RegexOptions.Compiled
-    );
+    private static readonly Regex PhaseHeaderRegex = MyRegex();
 
     public static Plan Parse(string planId, string content)
     {
@@ -143,5 +140,8 @@ public static class PlanParser
                || line.StartsWith("---")
                || line.StartsWith("===");
     }
+
+    [GeneratedRegex(@"PHASE\s+(\d+):\s*(.+)\s+\(([^)]+)\)\s*$", RegexOptions.IgnoreCase | RegexOptions.Compiled, "en-US")]
+    private static partial Regex MyRegex();
 }
 

@@ -1,13 +1,17 @@
 using System.Text.Json;
 using ProgressTracker;
 using ProgressTracker.Models;
+using ProgressTracker.Models.ConfigOptions;
+using ProgressTracker.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
+
+ICollection<string> allowedOrigins = builder.Configuration.GetSection("originEndpoints").Get<List<string>>() ?? [];
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins([.. allowedOrigins])
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
@@ -18,68 +22,53 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
     opts.SerializerOptions.WriteIndented = true;
 });
 
+builder.Services.Configure<AzureStorageOptions>(builder.Configuration.GetSection("AzureStorage"));
+
+builder.Services.AddSingleton<IBlobPlansRepository, BlobPlansRepository>();
+builder.Services.AddSingleton<ITableProgressRepository, TableProgressRepository>();
+
 var app = builder.Build();
 app.UseCors();
 
-// Resolve the plans directory relative to the project root (two levels up from build output)
-var plansRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "plans"));
-
-// GET /api/plans — list all task folder names
-app.MapGet("/api/plans", () =>
+// GET /api/plans — list all plan IDs from blob storage
+app.MapGet("/api/plans", async (IBlobPlansRepository planRepo) =>
 {
-    if (!Directory.Exists(plansRoot))
-        return Results.Problem($"Plans folder not found at: {plansRoot}");
-
-    var plans = Directory.GetDirectories(plansRoot)
-        .Select(Path.GetFileName)
-        .Where(name => name is not null)
-        .ToList();
-
+    var plans = await planRepo.ListPlansAsync();
     return Results.Ok(plans);
 });
 
 // GET /api/plans/{planId} — return parsed plan as structured JSON
-app.MapGet("/api/plans/{planId}", (string planId) =>
+app.MapGet("/api/plans/{planId}", async (string planId, IBlobPlansRepository planRepo) =>
 {
-    var planFile = Path.Combine(plansRoot, planId, "plan.md");
-    if (!File.Exists(planFile))
+    var content = await planRepo.GetPlanContentAsync(planId);
+    if (content is null)
         return Results.NotFound($"Plan '{planId}' not found.");
 
-    var content = File.ReadAllText(planFile);
     var plan = PlanParser.Parse(planId, content);
     return Results.Ok(plan);
 });
 
 // GET /api/plans/{planId}/progress — return saved progress
-app.MapGet("/api/plans/{planId}/progress", (string planId) =>
+app.MapGet("/api/plans/{planId}/progress", async (string planId, ITableProgressRepository progressRepo) =>
 {
-    var progressFile = Path.Combine(plansRoot, planId, "progress.json");
-    if (!File.Exists(progressFile))
-        return Results.Ok(new ProgressModel());
+    var progress = await progressRepo.GetProgressAsync(planId);
+    return Results.Ok(progress);
+});
 
-    var json = File.ReadAllText(progressFile);
+// POST /api/plans/{planId}/progress — save progress
+app.MapPost("/api/plans/{planId}/progress", async (string planId, HttpRequest request, ITableProgressRepository progressRepo) =>
+{
+    using var reader = new StreamReader(request.Body);
+    var json = await reader.ReadToEndAsync();
+
     var progress = JsonSerializer.Deserialize<ProgressModel>(json, new JsonSerializerOptions
     {
         PropertyNameCaseInsensitive = true
     }) ?? new ProgressModel();
 
-    return Results.Ok(progress);
-});
-
-// POST /api/plans/{planId}/progress — save progress
-app.MapPost("/api/plans/{planId}/progress", async (string planId, HttpRequest request) =>
-{
-    var planDir = Path.Combine(plansRoot, planId);
-    if (!Directory.Exists(planDir))
-        return Results.NotFound($"Plan '{planId}' not found.");
-
-    using var reader = new StreamReader(request.Body);
-    var json = await reader.ReadToEndAsync();
-
-    var progressFile = Path.Combine(planDir, "progress.json");
-    await File.WriteAllTextAsync(progressFile, json);
-
+    await progressRepo.SaveProgressAsync(planId, progress);
     return Results.Ok(new { saved = true });
 });
 
 app.Run();
+
