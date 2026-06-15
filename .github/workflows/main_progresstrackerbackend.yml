@@ -33,6 +33,7 @@ jobs:
         shell: bash
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          cd ./server
           dotnet build --configuration Release --output ./output
           popd
       
