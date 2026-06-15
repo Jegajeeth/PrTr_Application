@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Azure.Identity;
 using ProgressTracker;
 using ProgressTracker.Models;
 using ProgressTracker.Models.ConfigOptions;
@@ -6,7 +7,17 @@ using ProgressTracker.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ICollection<string> allowedOrigins = builder.Configuration.GetSection("originEndpoints").Get<List<string>>() ?? [];
+IConfiguration AzureConfigurations = builder.Configuration.GetSection("AzureStorage");
+
+string AzureKVName = AzureConfigurations.GetValue<string>("KeyVaultName")
+    ?? throw new Exception("KeyVaultName is not configured in AzureStorage section.");
+
+string AzureKeyVaultURI = $"https://{AzureKVName}.vault.azure.net/";
+
+builder.Configuration.AddAzureKeyVault(new Uri(AzureKeyVaultURI), new DefaultAzureCredential());
+
+ICollection<string> allowedOrigins = builder.Configuration.GetSection("originEndpoints").Get<List<string>>()
+                            ?? [];
 
 builder.Services.AddCors(options =>
 {
@@ -22,7 +33,7 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
     opts.SerializerOptions.WriteIndented = true;
 });
 
-builder.Services.Configure<AzureStorageOptions>(builder.Configuration.GetSection("AzureStorage"));
+builder.Services.Configure<AzureStorageOptions>(AzureConfigurations);
 
 builder.Services.AddSingleton<IBlobPlansRepository, BlobPlansRepository>();
 builder.Services.AddSingleton<ITableProgressRepository, TableProgressRepository>();
