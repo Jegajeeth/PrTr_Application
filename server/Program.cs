@@ -1,6 +1,9 @@
 using System.Text.Json;
 using Azure.Identity;
 using Microsoft.Azure.Functions.Worker.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using ProgressTracker.Models.ConfigOptions;
 using ProgressTracker.Storage;
 
