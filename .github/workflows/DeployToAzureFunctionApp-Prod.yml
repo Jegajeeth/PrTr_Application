@@ -1,0 +1,70 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy dotnet core project to Azure Function App - progresstrackerbackend
+
+on:
+  push:
+    branches:
+      - feature/functionappvertion
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'server' # set this to the path to your web app project, defaults to the repository root
+  DOTNET_VERSION: '10.0.x' # set this to the dotnet version to use
+  OUTPUT_PATH: '${{ github.workspace }}/publish' # Staging directory for compiled binaries
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
+
+    steps:
+      - name: 'Checkout GitHub Action'
+        uses: actions/checkout@v4
+
+      - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore Dependencies
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet restore
+          popd
+
+      - name: 'Build Application'
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet build --configuration Release --no-restore
+          popd
+
+      - name: 'Publish Application'
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          dotnet publish --configuration Release --no-build --output ${{ env.OUTPUT_PATH }}
+          cp ./host.json ${{ env.OUTPUT_PATH }}
+          cp ./local.settings.json ${{ env.OUTPUT_PATH }}
+          popd
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_11A822541B8D4623978ABD3344DCF477 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_45C909E68D17493B859FACF3D241A6AB }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8749AE689D984728849EFA1CDA1B7403 }}
+
+      - name: 'Run Azure Functions Action'
+        uses: Azure/functions-action@v1
+        id: fa
+        with:
+          app-name: 'progresstrackerbackend'
+          slot-name: 'Production'
+          package: '${{ env.OUTPUT_PATH }}'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
