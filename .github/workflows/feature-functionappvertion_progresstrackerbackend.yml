@@ -12,6 +12,7 @@ on:
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'server' # set this to the path to your web app project, defaults to the repository root
   DOTNET_VERSION: '10.0.x' # set this to the dotnet version to use
+  OUTPUT_PATH: '${{ github.workspace }}/publish' # Staging directory for compiled binaries
 
 jobs:
   build-and-deploy:
@@ -25,18 +26,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Dotnet'
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: 'Build Application'
         shell: bash
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          dotnet build --configuration Release --output ./output
-          cp ./host.json ./output
-          cp ./local.settings.json ./output
+          dotnet build --configuration Release --no-restore
           popd
+
+      - name: 'Publish Application'
+        shell: bash
+        run: |
+          dotnet publish --configuration Release --no-build --output ${{ env.OUTPUT_PATH }}
+          cp ./host.json ${{ env.OUTPUT_PATH }}
+          cp ./local.settings.json ${{ env.OUTPUT_PATH }}
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -51,5 +60,5 @@ jobs:
         with:
           app-name: 'progresstrackerbackend'
           slot-name: 'Production'
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          
+          package: '${{ env.OUTPUT_PATH }}'
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
