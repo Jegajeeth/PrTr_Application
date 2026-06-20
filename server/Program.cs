@@ -34,6 +34,7 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
     opts.SerializerOptions.WriteIndented = true;
 });
 
+
 builder.Services.Configure<AzureStorageOptions>(builder.Configuration.GetSection("AzureStorage"));
 
 builder.Services.AddSingleton<IBlobPlansRepository, BlobPlansRepository>();
