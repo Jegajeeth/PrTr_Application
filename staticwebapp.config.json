@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "methods": [
+        "get",
+        "post",
+        "delete",
+        "put",
+        "patch"
+      ],
+      "rewrite": "/index.html",
+      "redirect": "/",
+      "statusCode": 301,
+      "allowedRoles": [
+        "unauthorized"
+      ]
+    }
+  ]
+}
