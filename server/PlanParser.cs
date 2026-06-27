@@ -87,7 +87,7 @@ public static partial class PlanParser
             if (line.TrimStart().StartsWith(sectionHeader, StringComparison.OrdinalIgnoreCase))
             {
                 inSection = true;
-                var inline = line.Substring(line.IndexOf(':') + 1).Trim();
+                var inline = line[(line.IndexOf(':') + 1)..].Trim();
                 if (!string.IsNullOrWhiteSpace(inline))
                     result.Add(inline);
                 continue;
