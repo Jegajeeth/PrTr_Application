@@ -8,8 +8,13 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
 
   function handlePhaseCheck(e) {
     const checked = e.target.checked;
-    // Mark all topics complete when phase is checked
-    const newCompleted = checked ? phase.topics.map((t) => t.id) : [];
+    // Mark all topics and topic projects complete when phase is checked
+    const newCompleted = checked
+      ? [
+          ...phase.topics.map((t) => t.id),
+          ...(phase.topicProjects?.map((t) => t.id) ?? []),
+        ]
+      : [];
     onChange(phase.id, {
       phaseComplete: checked,
       completedTopics: newCompleted,
@@ -20,13 +25,18 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
     const next = checked
       ? [...new Set([...completedTopics, topicId])]
       : completedTopics.filter((id) => id !== topicId);
-    const allDone = next.length === phase.topics.length;
+    const total = phase.topics.length + (phase.topicProjects?.length ?? 0);
+    const allDone = next.length === total;
     onChange(phase.id, { phaseComplete: allDone, completedTopics: next });
   }
 
   const progressPct =
-    phase.topics.length > 0
-      ? Math.round((completedTopics.length / phase.topics.length) * 100)
+    phase.topics.length + (phase.topicProjects?.length ?? 0) > 0
+      ? Math.round(
+          (completedTopics.length /
+            (phase.topics.length + (phase.topicProjects?.length ?? 0))) *
+            100
+        )
       : phaseComplete
         ? 100
         : 0;
@@ -83,6 +93,34 @@ export default function PhaseCard({ phase, phaseProgress = {}, onChange }) {
                           }
                         />
                         {topic.text}
+                      </label>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+
+          {phase.topicProjects && phase.topicProjects.length > 0 && (
+            <div className="phase-section">
+              <span className="section-label">🛠️ Topic Projects</span>
+              <ul className="topic-list">
+                {phase.topicProjects.map((tp) => {
+                  const checked = completedTopics.includes(tp.id);
+                  return (
+                    <li
+                      key={tp.id}
+                      className={`topic-item ${checked ? "done" : ""}`}
+                    >
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) =>
+                            handleTopicCheck(tp.id, e.target.checked)
+                          }
+                        />
+                        {tp.text}
                       </label>
                     </li>
                   );

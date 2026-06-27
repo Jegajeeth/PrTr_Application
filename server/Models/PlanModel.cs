@@ -18,7 +18,8 @@ public record Phase(
     string SmallProject = "",
     string MediumProject = "",
     string AmbitiousProject = "",
-    List<string>? Resources = null
+    List<string>? Resources = null,
+    List<Topic>? TopicProjects = null
 );
 
 public record Plan(string Id, string Title, List<Phase> Phases);

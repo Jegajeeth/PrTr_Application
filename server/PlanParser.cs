@@ -56,9 +56,14 @@ public static partial class PlanParser
             var mediumProject = ExtractSection(phaseLines, "Medium Project:");
             var ambitiousProject = ExtractSection(phaseLines, "Ambitious Project:");
             var resources = ExtractBullets(phaseLines, "Resources:");
+            var topicProjectBullets = ExtractBullets(phaseLines, "Topic Projects:");
 
             var topicModels = topics
                 .Select((text, idx) => new Topic($"topic-{idx}", text))
+                .ToList();
+
+            var topicProjectModels = topicProjectBullets
+                .Select((text, idx) => new Topic($"tp-{idx}", text))
                 .ToList();
 
             phases.Add(new Phase(
@@ -66,7 +71,7 @@ public static partial class PlanParser
                 certification, capstone, notes,
                 difficulty, prerequisites, timeCommitment,
                 architectSkills, smallProject, mediumProject, ambitiousProject,
-                resources));
+                resources, topicProjectModels));
         }
 
         return new Plan(planId, title, phases);
@@ -134,7 +139,8 @@ public static partial class PlanParser
         {
             "Goal:", "Key Topics:", "Target Certification:", "Capstone Project:", "Notes:",
             "Difficulty:", "Prerequisites:", "Time Commitment:", "Architect Skills:",
-            "Small Project:", "Medium Project:", "Ambitious Project:", "Resources:"
+            "Small Project:", "Medium Project:", "Ambitious Project:", "Resources:",
+            "Topic Projects:"
         };
         return known.Any(s => line.TrimStart().StartsWith(s, StringComparison.OrdinalIgnoreCase))
                || line.StartsWith("---")
