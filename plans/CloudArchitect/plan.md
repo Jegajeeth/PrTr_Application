@@ -30,6 +30,14 @@ Key Topics:
 - Storage: Storage Accounts (Blob, Files, Queues, Tables), lifecycle policies, immutability, customer-managed keys.
 - Compute: VMs, VM Scale Sets, Availability Zones, Azure Backup, Azure Site Recovery.
 
+Topic Projects:
+- (Identity) Configure Conditional Access policies in Entra ID that block legacy authentication and require MFA for privileged roles; test with a test user account and document the policy reasoning in an ADR.
+- (RBAC & Governance) Implement a Management Group hierarchy with Azure Policy initiatives enforcing tag requirements, allowed locations, and denied VM SKUs across three subscriptions.
+- (Networking) Deploy a hub-and-spoke Virtual Network topology with Azure Virtual Network Manager; configure centralised routing and verify spoke-to-spoke connectivity through the hub firewall.
+- (Connectivity) Replace a public-endpoint Storage Account with a Private Endpoint and Private DNS zone; verify the resource is unreachable from outside the VNet using `curl` from an external host.
+- (Storage) Apply a lifecycle policy to a Blob Storage container that moves blobs to Cool after 30 days and Archive after 90 days; verify transitions with test blobs and monitor via Storage diagnostics.
+- (Compute) Deploy a VM Scale Set behind an Azure Load Balancer with CPU-based autoscale rules; simulate load with a stress tool and verify scale-out and scale-in events in Azure Monitor.
+
 Architect Skills:
 - Hub-and-spoke vs Virtual WAN trade-off reasoning.
 - Choosing between Public IP, Private Endpoint, and Service Endpoint for PaaS access.
@@ -77,6 +85,15 @@ Key Topics:
 - Data: Cosmos DB (NoSQL + vCore for MongoDB), Azure SQL Hyperscale, Azure Cache for Redis Enterprise.
 - Secrets & Config: Key Vault references, App Configuration with feature flags, Managed Identity for everything.
 
+Topic Projects:
+- (Runtime) Build and deploy a .NET 10 minimal API to App Service using native AOT; compare cold-start latency and binary size vs. the standard JIT build under identical load.
+- (Cloud-native .NET) Scaffold a .NET Aspire 9+ solution with a web frontend, API, and Redis cache; run it locally with full OpenTelemetry traces visible in the Aspire dashboard.
+- (PaaS) Deploy an App Service with staging and production deployment slots; perform a slot swap and then roll back, verifying zero downtime via Azure Monitor live metrics.
+- (Serverless) Create an Azure Function on the Flex Consumption plan with a Service Bus trigger and Managed Identity output binding; measure cold-start latency distribution under 100 concurrent invocations.
+- (Messaging) Implement a dead-letter queue monitor for Azure Service Bus that alerts to Teams/Slack when messages are unprocessed after 3 delivery attempts.
+- (Data) Design a Cosmos DB container partition key for a multi-tenant SaaS scenario; validate with 10K synthetic records that cross-partition query RU consumption is minimised.
+- (Secrets & Config) Migrate hardcoded connection strings from App Service application settings to Key Vault references using system-assigned Managed Identity; verify zero secrets remain visible in the Azure portal.
+
 Architect Skills:
 - Choosing between App Service, Container Apps, Functions, and AKS for a given workload.
 - Designing idempotent message handlers and outbox patterns for at-least-once delivery.
@@ -118,6 +135,14 @@ Key Topics:
 - Pipelines as code: terraform fmt/validate/plan/apply gated on PRs; Bicep linting + what-if in CI.
 - Secrets handling in IaC: Federated Workload Identity for OIDC (no long-lived service principals).
 - Drift detection and remediation strategies.
+
+Topic Projects:
+- (Bicep) Author a parameterised Bicep template for a complete web tier (App Service + Key Vault + Storage) with modules, what-if validation in CI, and Bicep linting enforced on every PR.
+- (Azure Verified Modules) Consume an AVM module for a Storage Account in a Bicep deployment; verify the module's built-in security defaults (HTTPS-only, public access disabled) activate without extra parameters.
+- (Terraform 1.10+) Migrate a portal-created resource group to Terraform state with `terraform import`; verify `terraform plan` shows zero drift after the import.
+- (Pipelines as code) Build a PR-gated GitHub Actions workflow running `terraform fmt`, `validate`, `tflint`, and `checkov` before every merge to main; block merges that introduce security findings.
+- (Secrets handling in IaC) Replace a long-lived service principal secret in a GitHub Actions Terraform workflow with OIDC federated workload identity; confirm no static credentials exist in repository settings.
+- (Drift detection) Schedule a nightly `terraform plan` run and post a Slack alert if any drift is detected between the state file and live Azure infrastructure.
 
 Architect Skills:
 - Selecting between Bicep, Terraform, and Pulumi based on team skillset, multi-cloud reach, and module ecosystem.
@@ -163,6 +188,15 @@ Key Topics:
 - AI on Kubernetes: KAITO (Kubernetes AI Toolchain Operator) for hosting open-source LLMs.
 - Service mesh: Istio add-on for AKS, mTLS, traffic shifting.
 
+Topic Projects:
+- (Containers) Build a .NET 10 API as a multi-stage chiselled Ubuntu container image; verify it runs as non-root and passes a Trivy scan with zero HIGH/CRITICAL CVEs before pushing to ACR.
+- (Registry) Push a container image to ACR and sign it with Notation; configure an ACR policy that rejects unsigned image pulls and verify a pull of an unsigned image is blocked.
+- (Lightweight hosting) Deploy a Dapr-enabled microservice to Azure Container Apps using KEDA scaling rules driven by Service Bus queue depth; verify scale-to-zero and scale-out behaviours.
+- (AKS Automatic) Provision an AKS Automatic cluster; deploy a workload with Workload Identity and verify the pod retrieves a Key Vault secret with no credentials in the pod spec.
+- (AKS Standard) Configure an AKS Standard cluster with Azure CNI Overlay and Cilium dataplane; apply a default-deny NetworkPolicy and verify intra-namespace traffic is blocked until a policy explicitly permits it.
+- (AI on Kubernetes) Deploy KAITO on an AKS GPU node pool and serve a Phi-3 model; query the inference endpoint from a .NET 10 client and record response latency.
+- (Service mesh) Enable the Istio add-on on AKS; configure mTLS between two services and use Istio traffic shifting to route 10% of requests to a canary Deployment; verify via Kiali.
+
 Architect Skills:
 - ACA vs AKS Automatic vs AKS Standard selection criteria (cost, control, scale).
 - Pod identity strategies: workload identity federation with Entra ID.
@@ -204,6 +238,14 @@ Key Topics:
 - IaC pipelines: terraform plan → manual approval → apply with OIDC federation; Bicep what-if gates.
 - Observability: OpenTelemetry SDK + Collector, Azure Monitor, Application Insights, Log Analytics, Managed Grafana, Managed Prometheus.
 - SRE practices: SLI/SLO/error budgets, runbooks, chaos engineering with Azure Chaos Studio, incident retrospectives.
+
+Topic Projects:
+- (Pipelines) Build a GitHub Actions workflow that runs `dotnet test`, container build, Cosign signing, and ACR push — gated on a passing CodeQL scan — completing end-to-end in under 10 minutes.
+- (Supply-chain security) Enable GitHub Advanced Security on a repository; triage the first CodeQL scan; configure Dependabot for automatic dependency patch PRs; verify SLSA provenance is attached to a build artefact.
+- (Developer experience) Set up a Microsoft Dev Box environment for a defined engineer persona; verify a new team member can clone a repo and run the full local stack within 15 minutes.
+- (IaC pipelines) Add a `terraform plan` cost-impact comment to every infrastructure PR using the Infracost GitHub Action; verify engineers see a cost estimate before merging.
+- (Observability) Instrument a .NET 10 app with the OpenTelemetry SDK; verify traces, metrics, and logs flow end-to-end to Azure Monitor and appear correctly correlated in Application Insights.
+- (SRE practices) Define SLIs and SLOs for a deployed service; create Azure Monitor burn-rate alert rules; run a Chaos Studio CPU-pressure fault injection and observe the resulting SLO impact.
 
 Architect Skills:
 - Designing branching + environment promotion strategies (trunk-based vs GitFlow vs release branches).
@@ -248,6 +290,14 @@ Key Topics:
 - Data security: Always Encrypted, customer-managed keys via Key Vault Managed HSM, Microsoft Purview for classification + DLP.
 - Confidential computing: Azure Confidential VMs (AMD SEV-SNP, Intel TDX), confidential containers on AKS.
 
+Topic Projects:
+- (Identity hardening) Enable Entra ID PIM for a privileged Azure role; configure access reviews and MFA re-authentication on activation; document the time-to-activate workflow and the risk reduction achieved.
+- (Platform security) Enable Microsoft Defender for Cloud on a subscription; reach a Secure Score of 80% by remediating the top CSPM recommendations; document each fix.
+- (SIEM/SOAR) Ingest AKS audit logs into Microsoft Sentinel; write a KQL analytics rule that detects a container escape pattern; create a Logic Apps playbook that automatically quarantines the affected node.
+- (Network security) Enable Azure Firewall Premium with IDPS and TLS inspection; demonstrate a known malicious DNS request is blocked and its details appear in the Firewall logs.
+- (Data security) Enable Always Encrypted on a sensitive column in Azure SQL; verify the .NET application can query the column while a DBA querying directly sees only ciphertext.
+- (Confidential computing) Deploy an application to an Azure Confidential VM (AMD SEV-SNP); verify remote attestation completes successfully and document the trust model and attestation evidence structure.
+
 Architect Skills:
 - Threat modelling (STRIDE / MITRE ATT&CK for Cloud) applied to Azure reference architectures.
 - Designing secrets-rotation lifecycles using Key Vault events + Functions.
@@ -290,6 +340,15 @@ Key Topics:
 - Azure OpenAI Service: GPT-4o / GPT-4.1 / o-series models, fine-tuning, batch inference, provisioned throughput.
 - Azure AI Agent Service: stateful agents with tool calling, RAG, and orchestration.
 - RAG patterns: Azure AI Search (vector + hybrid + semantic ranking), chunking strategies, embedding model selection.
+
+Topic Projects:
+- (Microsoft Fabric) Ingest a public CSV dataset into a Fabric Lakehouse; implement bronze/silver/gold layers via notebooks; surface a Power BI report in Direct Lake mode without any data movement.
+- (Medallion architecture) Design a medallion pipeline in Fabric for a streaming scenario: raw event ingestion → cleansed silver table → aggregated gold table with row-level security.
+- (Azure Databricks) Build a Delta Live Tables pipeline in Databricks that ingests, cleans, and aggregates a large dataset; compare run time and cost vs. an equivalent Fabric notebook approach.
+- (Azure AI Foundry) Deploy a GPT-4o model in Azure AI Foundry; run a batch evaluation job comparing two prompt variants using the built-in evaluation metrics; document methodology and results.
+- (Azure OpenAI Service) Implement a streaming completion endpoint in .NET 10 using the Azure OpenAI SDK; benchmark token throughput across pay-as-you-go and provisioned throughput units under identical load.
+- (Azure AI Agent Service) Build a stateful agent with tool calling that retrieves documents from Azure AI Search and synthesises a structured answer; evaluate groundedness scores with Azure AI Foundry.
+- (RAG patterns) Implement hybrid retrieval (keyword + vector) in Azure AI Search; compare answer quality (faithfulness, ROUGE) vs. keyword-only search on a 50-question fixed evaluation set.
 
 Architect Skills:
 - Choosing between Fabric, Synapse (legacy), and Databricks for analytical workloads.
@@ -337,6 +396,16 @@ Key Topics:
 - Business continuity: RPO/RTO, ASR orchestration, multi-region Cosmos DB, geo-restore.
 - Migration: Azure Migrate assessments, lift-and-shift vs refactor vs rebuild decision matrices.
 
+Topic Projects:
+- (Azure Well-Architected Framework) Conduct a WAF review of a deployed architecture from a prior phase; score every pillar; produce a prioritised remediation backlog with effort estimates.
+- (Cloud Adoption Framework) Map an existing project through the CAF Strategy and Plan phases; produce a one-page adoption plan with milestones aligned to the CAF "landing zone ready" criteria.
+- (Azure Landing Zones) Deploy the ALZ Bicep accelerator into a sandbox tenant; customise one policy initiative; verify compliance reports reflect the new guardrail across all management groups.
+- (Identity at scale) Configure cross-tenant B2B collaboration between two Entra ID tenants; implement Entitlement Management access packages with quarterly access reviews.
+- (Hybrid + multi-cloud) Onboard a non-Azure VM to Azure Arc; apply an Azure Policy initiative and verify compliance reporting is identical to native Azure resources.
+- (Resilient designs) Design and document an active-active multi-region architecture for a stateless API using Azure Front Door, Traffic Manager, and paired Cosmos DB regions with automatic failover.
+- (Business continuity) Execute an Azure Site Recovery failover drill for a VM workload; record actual RTO vs. the stated SLA; produce a post-drill improvement action list.
+- (Migration) Run an Azure Migrate assessment on a set of on-premises VMs; produce a migration wave plan with lift-and-shift vs. refactor recommendations and estimated cloud cost for each workload.
+
 Architect Skills:
 - Producing C4-style architecture diagrams and ADRs.
 - Cost optimization: reservations vs savings plans vs spot vs on-demand; right-sizing playbooks.
@@ -380,6 +449,14 @@ Key Topics:
 - Sustainability: Microsoft Cloud for Sustainability, Azure Carbon Optimization, Well-Architected Sustainability pillar.
 - Platform engineering: Internal Developer Platforms (IDPs), Backstage on Azure, golden paths, paved roads.
 - Leadership: writing RFCs, running architecture review boards (ARBs), mentoring engineers, communicating with executives.
+
+Topic Projects:
+- (Enterprise Architecture frameworks) Create an ArchiMate diagram for a fictional enterprise's Azure target state using TOGAF ADM phases as a structuring guide; present to a peer for review.
+- (Multi-cloud governance) Map 5 core Azure services to their AWS and GCP equivalents; document capability gaps and a multi-cloud abstraction strategy using Crossplane.
+- (FinOps) Run a 90-day FinOps exercise on a real Azure subscription; identify the top 5 waste sources; implement reserved instances or savings plans for one; publish a before/after savings report.
+- (Sustainability) Enable the Azure Carbon Optimization dashboard; identify the top 3 workloads by carbon footprint; implement and measure one reduction (e.g., schedule-based shutdown, right-sizing).
+- (Platform engineering) Publish one golden path template in Backstage: a developer can create a new microservice repo with IaC, CI/CD pipeline, and Argo CD Application from a single form submission.
+- (Leadership) Write a 2-page RFC for an architectural decision (e.g., migrate from App Service to AKS for the API platform); document options analysed, trade-offs, and the recommended decision; run a review session with peers.
 
 Architect Skills:
 - Constructing reference architectures and pattern libraries for an organization.

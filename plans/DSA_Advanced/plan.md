@@ -22,6 +22,13 @@ Key Topics:
 - Stacks & Queues: monotonic stack (next greater element); monotonic deque (sliding-window max/min).
 - Pattern → Algorithm: "find pair with target sum in unsorted array" → Hash Map O(n); "subarray sum equals k" → Prefix Sum + Hash Map O(n); "next greater element" → Monotonic Stack O(n); "sliding-window max" → Monotonic Deque O(n).
 
+Topic Projects:
+- (Complexity) Solve the same "find all pairs with sum S" problem with O(n²) brute-force, O(n log n) sort+binary-search, and O(n) hash-map; benchmark on 10K, 100K, and 1M elements; derive the Master Theorem result for one chosen divide-and-conquer recurrence.
+- (Arrays & Strings) Implement Kadane's max-subarray algorithm returning the actual subarray indices; also implement prefix-sum + hash-map for "count subarrays with sum equal to k"; validate both on edge cases (all-negative, all-zero, single-element).
+- (Hash Maps & Sets) Implement a HashMap from scratch using open addressing with linear probing, quadratic probing, and double hashing; benchmark collision rate and get/set throughput at load factors 0.5, 0.75, and 0.95.
+- (Stacks & Queues) Implement a monotonic stack for "next greater element" and a monotonic deque for "sliding-window maximum"; solve 5 LeetCode problems using each structure and record the pattern tag and O-complexity for each.
+- (Pattern → Algorithm) Read 10 new LeetCode Medium problems cold; for each, write down the pattern name, correct data structure, and expected time complexity before reading any hints; track your accuracy rate across the phase.
+
 Architect Skills:
 - Choose data structures based on access patterns, cache locality, and memory budget.
 - Document trade-offs (array vs linked list, hash map vs sorted map) in a decision log.
@@ -66,6 +73,14 @@ Key Topics:
 - Binary Search (answer space): "minimise the maximum", "capacity to ship packages within D days", "koko eating bananas" — predicate-based bisect.
 - Pattern → Algorithm: "pair with sum S in sorted array" → Two Pointers O(n); "longest contiguous subarray satisfying condition" → Sliding Window O(n); "minimum X such that f(X) is true and f is monotone" → Binary Search on Answer O(log(max) × f-cost); "k-th smallest in sorted matrix" → Binary Search + count O(n log(max)).
 
+Topic Projects:
+- (Two Pointers — Opposite Ends) Implement "trapping rain water" and "container with most water" using two pointers; draw the pointer-movement trace for 3 input examples and explain why each pointer moves at each step.
+- (Two Pointers — Same Direction) Implement Dutch National Flag (3-way partition) in-place; verify correctness on arrays with all-same, two-distinct, and three-distinct element distributions.
+- (Sliding Window — Fixed Size) Implement "find all anagrams in a string" using a fixed sliding window with a character-frequency map; benchmark vs. the brute-force O(n×m) approach on a 1M-character string.
+- (Sliding Window — Variable Size) Implement "minimum window substring" with a variable sliding window; draw a step-by-step expand/shrink trace on a 20-character example.
+- (Binary Search — Classic) Implement `bisect_left` and `bisect_right` from scratch with a test suite covering empty array, all-equal elements, target below minimum, and target above maximum.
+- (Binary Search — Answer Space) Implement "capacity to ship packages within D days" and "koko eating bananas" using binary search on the answer space; visualise the search-range narrowing at each iteration.
+
 Architect Skills:
 - Identify monotonicity in an answer space — the decisive insight that enables binary-search-on-answer.
 - Analyse cache-line efficiency of pointer-based vs index-based traversal.
@@ -105,6 +120,13 @@ Key Topics:
 - Divide and Conquer: merge sort (count inversions), quicksort and partition schemes (Lomuto, Hoare), closest pair of points O(n log n), Karatsuba multiplication.
 - QuickSelect: k-th largest element in O(n) average with randomised pivot.
 - Pattern → Algorithm: "generate all subsets" → Backtracking O(2^n); "generate all permutations" → Backtracking O(n!); "solve constraint puzzle (Sudoku, N-Queens)" → Backtracking + Pruning; "count inversions" → Merge Sort D&C O(n log n); "k-th largest unsorted" → QuickSelect O(n) avg.
+
+Topic Projects:
+- (Recursion Patterns) Implement Fibonacci using naive recursion, memoisation, and bottom-up tabulation; compare call counts and memory usage for n=35, 40, 45; visualise overlapping subproblems with a recursion-tree diagram.
+- (Backtracking — Enumeration) Implement power-set generation, swap-based permutation generation, and combinations of size k; verify output counts equal 2^n, n!, and C(n,k) for n=4 and n=5.
+- (Backtracking — Constraint Satisfaction) Implement a Sudoku solver; measure solve time on 10 easy, 10 medium, and 10 hard puzzles with and without AC-3 arc-consistency pruning; report the average speedup.
+- (Divide and Conquer) Implement merge sort instrumented to count inversions; verify the count against an O(n²) brute-force on a 10-element array; benchmark both up to n=10⁶.
+- (QuickSelect) Implement QuickSelect with a randomised pivot; benchmark average-case vs. worst-case (sorted input) performance for k-th largest in arrays of 10K, 100K, and 1M elements.
 
 Architect Skills:
 - Estimate search-space explosion (branching-factor^depth) and apply pruning to keep it tractable.
@@ -148,6 +170,16 @@ Key Topics:
 - Bitmask DP: travelling salesman (small n), minimum cost to visit all nodes, shortest path visiting all nodes.
 - Optimisations: 1-D rolling array (space O(n) → O(1)); divide-and-conquer optimisation O(n log n); convex hull trick (CHT) for linear cost functions; monotonic-queue DP optimisation.
 - Pattern → Algorithm: "overlapping subproblems + optimal substructure" → DP (memo or tabulation); "max subarray sum" → Kadane's O(n); "LIS (longest increasing subsequence)" → DP O(n²) or patience sorting O(n log n); "count/min/max over all subsets" → Bitmask DP O(2^n × n); "optimal bracket cost between i and j" → Interval DP O(n³); "digits of a number with a property" → Digit DP.
+
+Topic Projects:
+- (Linear DP) Implement coin-change minimum, coin-change count-ways, climbing stairs, and house robber; compare space-optimised O(amount) rolling-array vs. the full 2-D table on inputs of size 10³ and 10⁴.
+- (Knapsack Family) Implement 0/1 knapsack, unbounded knapsack, and partition-equal-subset-sum; draw the complete DP table for a 5-item example; quantify memory savings from the 1-D rolling-array optimisation.
+- (String DP) Implement LCS, edit distance (Levenshtein), and longest palindromic subsequence; for each, reconstruct the actual sequence by backtracking through the DP table, not just the scalar length.
+- (Interval DP) Implement matrix chain multiplication and burst balloons; draw the interval-expansion diagram for a 5-element input; verify against brute-force enumeration.
+- (Tree DP) Implement "house robber III" and "binary tree maximum path sum"; implement both iteratively (post-order stack) and recursively; confirm identical results on 5 test trees.
+- (State Machine DP) Implement all buy/sell stock variants (one transaction, unlimited, with cooldown, with fee); draw the state-machine diagram and label each transition edge with its cost.
+- (Bitmask DP) Implement TSP via bitmask DP for n=10, 14, and 18 cities; plot the exponential runtime growth; add a greedy nearest-neighbour heuristic and compare solution quality vs. the exact DP result.
+- (Optimisations) Apply the 1-D rolling-array optimisation to the LCS DP; implement the Convex Hull Trick for a linear DP problem and measure the reduction from O(n²) to O(n); benchmark on n=10⁴ and n=10⁵.
 
 Architect Skills:
 - Prove when greedy is sufficient vs when DP is required (exchange-argument proof).
@@ -195,6 +227,15 @@ Key Topics:
 - Binary Lifting (Sparse Table): LCA in O(log n) preprocessing + O(log n) query; range-minimum query in O(1) after O(n log n) preprocessing.
 - Pattern → Algorithm: "k-th smallest/largest dynamically" → Heap O(log k); "range sum with point updates" → Fenwick Tree O(log n); "range sum with range updates" → Segment Tree + lazy O(log n); "prefix / autocomplete search" → Trie O(L); "LCA of two nodes" → Binary Lifting O(log n); "median of a dynamic stream" → Two Heaps O(log n) per insert.
 
+Topic Projects:
+- (Binary Trees) Implement all four traversals (pre/in/post-order iterative + BFS level-order); implement serialise/deserialise using level-order BFS; verify round-trip correctness on a balanced tree, a left-skewed tree, and a single-node tree.
+- (Binary Search Trees) Implement an AVL tree with insert, delete, and self-balancing rotations; assert the balance-factor invariant after every operation on a 20-node randomised stress test.
+- (Heaps & Priority Queues) Implement "merge k sorted lists" using a min-heap; benchmark throughput for k=10, 100, and 1000 lists each containing 10K elements; compare with a naive merge-all O(kN) baseline.
+- (Tries) Implement a Trie with autocomplete returning the top-3 suggestions by insertion frequency, backed by a min-heap; test on a 10K-word dictionary with 100 diverse prefix queries.
+- (Segment Trees) Implement a segment tree with lazy propagation supporting range sum, range min, and range max updates and queries; verify correctness against a brute-force baseline on 10⁵ random operations.
+- (Fenwick Tree) Implement a 1-D and 2-D Fenwick Tree; use the 1-D version to solve "count of smaller numbers after self"; verify the answer against an O(n²) brute-force for n≤10K.
+- (Binary Lifting) Implement binary lifting for LCA with O(n log n) preprocessing and O(log n) queries; verify on a tree with 10K nodes; compare query latency vs. a naïve O(n) LCA walk.
+
 Architect Skills:
 - Choose between segment tree and Fenwick tree based on update/query symmetry and implementation complexity.
 - Design an O(log n) rank/select leaderboard service using an augmented BST or Fenwick tree.
@@ -235,6 +276,14 @@ Key Topics:
 - Minimum Spanning Tree: Kruskal's (Union-Find + sort edges), Prim's (heap-based).
 - Union-Find (DSU): path compression + union by rank → O(α) per operation; cycle detection, dynamic connectivity, number of connected components.
 - Pattern → Algorithm: "shortest path unweighted" → BFS O(V+E); "shortest path non-negative weights" → Dijkstra O((V+E) log V); "shortest path with negative edges" → Bellman-Ford O(VE); "all-pairs shortest path" → Floyd-Warshall O(V³); "minimum cost to connect all nodes" → Kruskal/Prim MST; "task ordering with dependencies" → Topological Sort; "cycle detection undirected" → Union-Find or BFS/DFS coloring; "cycle detection directed" → DFS 3-color marking.
+
+Topic Projects:
+- (Representations) Implement the same 30-node, 50-edge graph as an adjacency list, adjacency matrix, and edge list; benchmark BFS traversal time and memory consumption for each representation.
+- (Traversal) Implement BFS for bipartite-checking and DFS with 3-colour marking for cycle detection in a directed graph; apply both to a 100-node graph and verify the cycle detection result against brute force.
+- (Topological Sort) Implement Kahn's BFS-based and DFS post-order topological sorts; apply both to the "course schedule" problem; verify they produce equivalent valid orderings.
+- (Shortest Paths) Implement Dijkstra (binary heap), Bellman-Ford, and Floyd-Warshall; benchmark on graphs of 100, 1K, and 5K nodes; document when each algorithm is the right choice.
+- (Minimum Spanning Tree) Implement Kruskal's (with DSU) and Prim's (with a min-heap); benchmark on dense vs. sparse graphs at 1K nodes; verify both produce MSTs of identical total weight.
+- (Union-Find) Implement DSU with path compression and union by rank; benchmark amortised operation cost vs. naïve union-find without optimisations for 10⁶ union/find operations.
 
 Architect Skills:
 - Map service-mesh topology to a directed graph and identify critical-path bottlenecks.
@@ -278,6 +327,14 @@ Key Topics:
 - Advanced Shortest Path: A* with admissible heuristic O((V+E) log V), bidirectional Dijkstra, contraction hierarchies (conceptual overview).
 - Pattern → Algorithm: "find SCCs / condensation graph" → Tarjan's or Kosaraju's O(V+E); "bridges or cut vertices in a network" → Tarjan's bridge-finding O(V+E); "maximum flow / minimum cut" → Dinic's O(V²E); "maximum bipartite matching" → Hopcroft-Karp O(E√V); "route visiting every edge once" → Eulerian Circuit via Hierholzer's O(V+E); "fastest path in a game map with heuristic" → A*.
 
+Topic Projects:
+- (Strongly Connected Components) Implement both Tarjan's and Kosaraju's SCC algorithms; apply both to a 50-node directed graph; verify they identify identical SCCs; build and display the condensation DAG.
+- (Articulation Points & Bridges) Implement Tarjan's bridge-finding algorithm; apply it to a modelled network graph; report all bridges and articulation points as single points of failure.
+- (Network Flow) Implement Dinic's max-flow; solve a bipartite matching problem using it; benchmark throughput vs. Edmonds-Karp on unit-capacity networks of 100 and 500 nodes.
+- (Bipartite Matching) Implement Hopcroft-Karp; apply it to a job-applicant matching scenario with 100 applicants and 100 jobs; verify the maximum matching size against brute force for n≤10.
+- (Euler Path & Circuit) Implement Hierholzer's algorithm; verify the existence conditions (all-even-degree for circuit, exactly-2-odd-degree for path) on 5 test graphs; trace the circuit construction step-by-step.
+- (Advanced Shortest Path) Implement A* with a Manhattan-distance heuristic on a 2-D grid; compare nodes explored vs. plain Dijkstra on 10 source-destination pairs; measure speedup as obstacle density increases.
+
 Architect Skills:
 - Model load-balancing capacity constraints as a max-flow problem; apply min-cut to identify network bottlenecks and calculate theoretical maximum throughput.
 - Justify algorithm choice (Dinic's vs Edmonds-Karp) based on graph density and expected flow magnitude.
@@ -320,6 +377,15 @@ Key Topics:
 - Advanced DP Revisited: digit DP (count numbers in [L,R] satisfying digit constraints), tree DP with rerooting technique, matrix exponentiation for linear recurrences O(k³ log n).
 - Computational Geometry: convex hull (Graham scan / Andrew's monotone chain O(n log n)), line segment intersection, rotating calipers, point-in-polygon.
 - Pattern → Algorithm: "single pattern in text" → KMP or Z-Algorithm O(n+m); "multiple patterns in text simultaneously" → Aho-Corasick O(text + patterns + matches); "count distinct substrings" → Suffix Array + LCP O(n log n); "longest repeated substring" → Suffix Array; "interval scheduling — maximise count" → Greedy sort-by-end-time O(n log n); "linear recurrence mod p in O(log n)" → Matrix Exponentiation; "count integers in [L,R] satisfying digit rule" → Digit DP; "primality for large n" → Miller-Rabin O(k log²n); "convex hull of points" → Graham Scan or Monotone Chain O(n log n).
+
+Topic Projects:
+- (Greedy Algorithms) Implement interval scheduling (maximise count), Huffman coding, and task scheduling with deadlines; write an exchange-argument correctness proof for one of them; verify greedy optimality against a DP solution.
+- (String Algorithms) Implement KMP, Z-algorithm, and Rabin-Karp; benchmark all three finding a 10-character pattern in a 100 MB text corpus; verify all return identical match positions.
+- (Suffix Structures) Build a suffix array with LCP array for a 10K-character string; use it to find the longest repeated substring and count distinct substrings; verify both against an O(n²) brute-force.
+- (Randomised Algorithms) Implement reservoir sampling for a stream of unknown size; verify uniform distribution over 1M samples with a chi-squared test; implement Miller-Rabin and test it on the first 1000 Carmichael numbers.
+- (Number Theory) Implement the Sieve of Eratosthenes, fast modular exponentiation, modular inverse (Fermat's Little Theorem + extended Euclidean), and CRT; use this toolkit to solve 3 competitive programming number-theory problems.
+- (Advanced DP Revisited) Implement digit DP counting integers in [L, R] with no two consecutive equal digits; implement matrix exponentiation to compute the n-th Fibonacci in O(log n); verify both against brute force for small inputs.
+- (Computational Geometry) Implement Andrew's monotone chain convex hull; benchmark on point sets of 1K, 100K, and 1M points; use rotating calipers to compute the hull's diameter.
 
 Architect Skills:
 - Apply amortised analysis (aggregate, accounting, potential methods) to justify O(1) amortised operations in system-level structures such as dynamic buffers and event queues.

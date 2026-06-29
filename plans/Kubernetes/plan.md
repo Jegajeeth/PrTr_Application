@@ -31,6 +31,16 @@ Key Topics:
 - Configuration: ConfigMap, Secret (and why secrets are NOT really secret without encryption-at-rest).
 - kubectl proficiency: imperative vs declarative, `kubectl explain`, `-o yaml --dry-run=client`, contexts.
 
+Topic Projects:
+- (Architecture) Deploy a Pod and trace its full lifecycle through the API server, scheduler, kubelet, and container runtime using `kubectl get events` and `kubectl describe pod`.
+- (Container runtime) Inspect a running containerd container's OCI bundle and image layers using `ctr` from the containerd CLI; compare the layer count before and after a `docker pull`.
+- (Local clusters) Deploy the same 3-service application to `kind`, `minikube`, and `k3d`; compare startup time, resource usage, and CNI behaviour; document when each tool is preferred.
+- (Core objects) Deploy a CronJob that runs every 5 minutes; manually trigger a Job from it; verify both scheduled and manually triggered completions appear in `kubectl get jobs`.
+- (Networking basics) Apply a NetworkPolicy that permits only a frontend Pod to reach a backend Pod; verify a busybox test pod cannot reach the backend but the frontend can.
+- (Storage basics) Create a PVC, mount it in a Pod, write test data, delete the Pod, recreate it with the same PVC, and verify the data persists.
+- (Configuration) Store a database URL in a ConfigMap and a password in a Secret; inject both into a Pod via environment variables; verify the Secret value is absent from `kubectl describe pod`.
+- (kubectl proficiency) Generate a Deployment YAML with `--dry-run=client -o yaml`; add resource limits; apply it; then use `kubectl rollout history` and `kubectl rollout undo` to perform a rollback.
+
 Architect Skills:
 - Pod-design trade-offs: sidecar vs ambient vs separate Deployment.
 - StatefulSet vs Deployment decision tree.
@@ -81,6 +91,17 @@ Key Topics:
 - Packaging: Helm 3 (current), Kustomize overlays, Helm vs Kustomize trade-offs.
 - Troubleshooting: `kubectl describe`, `kubectl logs --previous`, `kubectl debug` ephemeral containers, common CrashLoopBackOff causes.
 
+Topic Projects:
+- (Pod design patterns) Deploy a Pod with a sidecar container streaming the main container's log file to stdout; verify the sidecar log output appears in `kubectl logs -c <sidecar>`.
+- (Probes) Deliberately misconfigure a liveness probe endpoint; observe the restart cycle; fix the probe; verify the restart count stops incrementing after a successful rolling update.
+- (Resource management) Set requests and limits on a Deployment; trigger an OOMKill by setting memory limit below actual usage; observe the event and fix it; document the QoS class impact.
+- (Configuration & secrets injection) Deploy the External Secrets Operator and sync a secret from HashiCorp Vault into a Kubernetes Secret; rotate the Vault secret and verify the Kubernetes Secret updates automatically.
+- (Multi-container patterns) Implement an ambassador sidecar that proxies database connections with a translated connection string; verify the main container uses a simplified config.
+- (Application networking) Deploy a service using the Gateway API HTTPRoute on a `kind` cluster; compare routing configuration verbosity and flexibility vs. a traditional Ingress resource.
+- (Persistent storage) Create a StatefulSet with `volumeClaimTemplates`; scale from 1 to 3 replicas; verify each replica has its own PVC; scale back to 1 and confirm PVCs are retained.
+- (Packaging) Write a Helm chart for a 2-service application with a dependency sub-chart; override sub-chart values from the parent `values.yaml`; render with `helm template` before installing.
+- (Troubleshooting) Deliberately introduce a CrashLoopBackOff, OOMKill, and ImagePullBackOff; diagnose and fix each using only `kubectl describe`, `kubectl logs --previous`, and `kubectl debug`.
+
 Architect Skills:
 - Choosing between Helm, Kustomize, and raw YAML for a given org maturity.
 - Designing 12-Factor-compliant containerized apps.
@@ -126,6 +147,16 @@ Key Topics:
 - Observability for cluster operators: Metrics Server, Prometheus + Grafana stack, OpenTelemetry Collector, Loki for logs.
 - Backup/DR: Velero, etcd snapshots, cross-region cluster recovery.
 
+Topic Projects:
+- (Cluster bootstrap) Bootstrap a cluster with `kubeadm` on 3 VMs; perform a certificate rotation; verify all components accept the new certificates and the cluster remains healthy.
+- (Managed offerings) Deploy the same workload to AKS Automatic, AKS Standard, and GKE Autopilot; compare control-plane access, upgrade experience, and pricing for the same node configuration.
+- (Cluster upgrades) Upgrade an AKS Standard cluster by one minor version using a surge upgrade strategy; verify zero dropped requests with a continuous load test running throughout.
+- (Networking deep dive) Deploy Cilium with eBPF dataplane on AKS; enable Hubble for flow visibility; trace a frontend-to-backend request and visualise the complete network path in the Hubble UI.
+- (Storage at scale) Configure a CSI driver with volume snapshotting; take a snapshot of a PVC, delete the original PVC and its data, restore from the snapshot, and verify data integrity.
+- (Scheduling) Configure a node pool with a taint; apply tolerations to specific workloads; add topology spread constraints and verify pods are distributed evenly across availability zones.
+- (Observability) Deploy the kube-prometheus-stack; create a Grafana dashboard for node CPU/memory, pod restarts, and PVC usage; configure an alert that fires when any pod restarts more than 3 times in 10 minutes.
+- (Backup/DR) Use Velero to back up a namespace containing a StatefulSet; simulate a disaster by deleting the namespace; restore from backup and verify data integrity and service availability.
+
 Architect Skills:
 - Selecting between fully-managed (AKS Automatic, GKE Autopilot) and "give me the nodes" managed Kubernetes.
 - Designing multi-AZ + multi-region cluster topologies for stated RPO/RTO.
@@ -170,6 +201,16 @@ Key Topics:
 - Network security: NetworkPolicy (Cilium L7-aware), service-mesh mTLS (Istio ambient mode, Linkerd).
 - Secrets at rest: KMS-backed etcd encryption, External Secrets Operator with cloud KMS backends, Sealed Secrets, SOPS.
 - Confidential computing: confidential containers (CoCo project), AKS confidential nodes, GKE Confidential GKE Nodes.
+
+Topic Projects:
+- (Authentication & authorization) Create a least-privilege ClusterRole for a CI service account that can only read and patch Deployments in one namespace; verify it cannot delete resources or access other namespaces.
+- (Pod Security Standards) Apply the `restricted` Pod Security Admission profile to a namespace; attempt to deploy a privileged Pod; verify the admission block; fix the manifest to comply with Restricted.
+- (Policy as code) Write a Kyverno policy that blocks any image not sourced from a trusted registry (e.g., only `myregistry.azurecr.io`); test with a compliant and a non-compliant Deployment.
+- (Runtime security) Deploy Falco with a custom rule alerting when a shell is spawned inside a running container; trigger the rule by exec-ing into a Pod and verify the alert fires.
+- (Supply chain) Sign a container image with Cosign keyless signing; configure a Kyverno policy that only admits images with a valid Cosign signature; verify unsigned images are blocked at admission.
+- (Network security) Enable Cilium L7-aware network policies; write a policy allowing GET requests from a frontend pod to a backend's `/api` path but blocking POST requests; verify with curl.
+- (Secrets at rest) Enable KMS-backed etcd encryption on an AKS cluster; verify secrets are stored as encrypted ciphertext in etcd by querying `etcdctl` directly.
+- (Confidential computing) Deploy a workload to an AKS confidential node pool; verify remote attestation completes successfully and document the attestation evidence structure.
 
 Architect Skills:
 - Threat-modelling a Kubernetes cluster (STRIDE / MITRE ATT&CK for Containers).
@@ -217,6 +258,17 @@ Key Topics:
 - AI workloads on Kubernetes: KAITO (Azure), NVIDIA GPU Operator, Kueue for batch/AI job scheduling, KServe for model serving.
 - Platform engineering: Internal Developer Platforms (IDPs), Backstage on Kubernetes, Crossplane / Cluster API for self-service infra, golden paths.
 - FinOps for Kubernetes: OpenCost, KubeCost, right-sizing recommendations, spot-instance strategies.
+
+Topic Projects:
+- (GitOps) Deploy Argo CD; configure it to watch a Git repository for a Helm chart; manually modify the live Deployment; verify Argo CD detects and reverts the drift within 3 minutes.
+- (Progressive delivery) Configure Argo Rollouts for a canary deployment with Prometheus metric analysis; inject errors to simulate a bad release; verify automatic pause and rollback.
+- (Service mesh) Install Istio in ambient mode; configure mTLS between all services in a namespace; use Kiali to visualise the service graph and confirm no plaintext traffic is present.
+- (Observability stack) Deploy the full LGTM stack (Loki, Grafana, Tempo, Mimir); create a unified dashboard correlating traces, metrics, and logs for a single failing request.
+- (SRE practices) Define SLOs for two services using OpenSLO spec; implement burn-rate alerting in Grafana; run an Istio fault injection and verify the error budget is consumed and the alert fires.
+- (Multi-tenancy) Set up vCluster to create two isolated virtual clusters in the same physical cluster; verify workloads in one vCluster cannot reach workloads in the other; compare resource overhead vs. separate physical clusters.
+- (AI workloads) Deploy KAITO on an AKS GPU node pool; serve a small open-source LLM; use Kueue to queue two competing batch inference jobs and verify fair resource allocation.
+- (Platform engineering) Create a Backstage software template that generates a Git repo, Helm chart, and Argo CD Application from a single form; verify a team can deploy a new microservice end-to-end without platform-team involvement.
+- (FinOps for Kubernetes) Deploy OpenCost; generate a namespace-level cost report; identify the 3 most expensive workloads; right-size resource requests for one of them and measure the resulting cost reduction.
 
 Architect Skills:
 - Defining the "platform contract" — what the platform team owns vs what app teams own.

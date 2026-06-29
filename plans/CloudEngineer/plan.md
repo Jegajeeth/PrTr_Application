@@ -28,6 +28,14 @@ Key Topics:
 - Storage: Storage Accounts (Blob / Files / Queues / Tables), lifecycle policies, immutability, customer-managed keys via Key Vault.
 - Compute: Virtual Machines, VM Scale Sets, Availability Zones, Azure Backup, Azure Site Recovery basics.
 
+Topic Projects:
+- (Identity) Configure Conditional Access in Entra ID to block legacy authentication and require MFA for admin roles; test with a test account and verify the policy blocks non-compliant sign-ins.
+- (RBAC & Governance) Create a custom RBAC role that grants read-only access to Storage Accounts in a resource group but blocks deletion; validate with a test service principal.
+- (Networking) Deploy a hub-and-spoke VNet topology with Azure Virtual Network Manager; configure centralised routing through the hub and verify spoke-to-spoke connectivity.
+- (Connectivity) Replace a Storage Account public endpoint with a Private Endpoint and Private DNS zone; confirm the resource is unreachable from outside the VNet.
+- (Storage) Apply a Blob lifecycle policy that moves data to Cool after 30 days and Archive after 90 days; verify transitions using test blobs and Azure Storage diagnostics.
+- (Compute) Deploy a VM Scale Set with autoscale rules; trigger a scale-out by simulating CPU load; verify the new instance is healthy and then verify scale-in after load drops.
+
 Architect Skills:
 - Hub-and-spoke vs Virtual WAN trade-off reasoning for enterprise topologies.
 - Choosing between Public IP, Private Endpoint, and Service Endpoint for PaaS access.
@@ -75,6 +83,15 @@ Key Topics:
 - Data: Cosmos DB (NoSQL + vCore), Azure SQL Hyperscale, Azure Cache for Redis Enterprise.
 - Secrets & Config: Key Vault references in App Service / Functions, App Configuration with feature flags, system-assigned and user-assigned Managed Identities.
 
+Topic Projects:
+- (Runtime) Deploy a .NET 10 minimal API with native AOT to App Service; compare cold-start latency and memory footprint vs. the standard JIT build under 50 concurrent requests.
+- (Cloud-native .NET) Scaffold a .NET Aspire 9+ solution with a web frontend, API backend, and Redis; verify OpenTelemetry traces appear in the Aspire dashboard during a local run.
+- (PaaS) Deploy an App Service with two deployment slots (staging/production); perform a slot swap; roll back; verify zero dropped requests using Application Insights live metrics throughout.
+- (Serverless) Create an Azure Function on the Flex Consumption plan with a Service Bus trigger and Managed Identity input binding to Cosmos DB; measure cold-start latency under load.
+- (Messaging) Configure a Service Bus dead-letter queue alert that sends a Teams notification when unprocessed messages exceed a threshold after 3 delivery attempts.
+- (Data) Design a Cosmos DB partition key for a multi-tenant scenario; validate with 5K synthetic records that hot partitions are avoided and RU consumption is predictable.
+- (Secrets & Config) Migrate all hardcoded connection strings from App Service application settings to Key Vault references via Managed Identity; verify no secrets appear in the Azure portal.
+
 Architect Skills:
 - Selecting between App Service, Azure Container Apps, Functions, and AKS for a given workload's scale + cost shape.
 - Designing idempotent message handlers and the outbox pattern for at-least-once delivery.
@@ -116,6 +133,14 @@ Key Topics:
 - IaC pipelines: `terraform fmt/validate/plan/apply` gated on PRs; Bicep linting + what-if in CI.
 - Secrets handling in IaC: Federated Workload Identity (OIDC) to GitHub Actions / Azure DevOps — no long-lived service principal secrets.
 - Drift detection and remediation patterns (Azure Policy + scheduled `plan` runs).
+
+Topic Projects:
+- (Bicep) Author a parameterised Bicep template for a web tier (App Service + Key Vault + Storage) with modules, what-if deployments, and Bicep linting in CI.
+- (Azure Verified Modules) Consume an AVM Storage Account module in a Bicep deployment; verify that the module's built-in security defaults apply without manual parameters.
+- (Terraform 1.10+) Import an existing portal-created resource group into Terraform state; run `terraform plan` and confirm zero drift after import.
+- (IaC pipelines) Build a PR-gated GitHub Actions workflow that runs `terraform fmt`, `validate`, `tflint`, and `checkov` on every merge request; block merges with security findings.
+- (Secrets handling in IaC) Replace a long-lived service principal secret in a Terraform GitHub Actions workflow with OIDC federated workload identity; verify no static secrets exist in repository settings.
+- (Drift detection) Schedule a nightly `terraform plan` job and post a Slack alert if any live-infrastructure drift is detected relative to the state file.
 
 Architect Skills:
 - Selecting between Bicep and Terraform based on team skillset, multi-cloud reach, and module ecosystem.
@@ -161,6 +186,15 @@ Key Topics:
 - Workload Identity: Federated Entra ID identities for pods (replaces deprecated pod-managed identities).
 - Service mesh: Istio add-on for AKS, mTLS, traffic shifting for canary deploys.
 
+Topic Projects:
+- (Containers) Build a .NET 10 API with a multi-stage chiselled Ubuntu Dockerfile; verify it runs non-root, passes Trivy with zero HIGH/CRITICAL CVEs, and is under 100 MB.
+- (Registry) Push a signed container image to ACR using Notation; configure ACR to block unsigned image pulls and verify enforcement.
+- (Lightweight hosting) Deploy a Dapr pub/sub microservice to Azure Container Apps with KEDA scaling triggered by Service Bus queue depth; verify scale-to-zero and scale-out.
+- (AKS Automatic) Provision an AKS Automatic cluster via Azure CLI; deploy a workload using Workload Identity that retrieves a Key Vault secret with no credentials in the pod spec.
+- (AKS Standard) Configure AKS Standard with Azure CNI Overlay; apply a default-deny NetworkPolicy; verify that traffic between two pods is blocked until an explicit allow policy is added.
+- (Workload Identity) Configure Federated Entra ID identity for a pod; verify the pod can list Azure Storage blobs using the federated token and cannot access resources outside the assigned role.
+- (Service mesh) Install the Istio add-on on AKS; configure mTLS between two namespaces; use traffic shifting to route 10% of requests to a canary Deployment.
+
 Architect Skills:
 - Azure Container Apps vs AKS Automatic vs AKS Standard selection criteria (cost, control, scale).
 - Designing zero-downtime deployment topologies (canary, blue/green, traffic shadowing).
@@ -203,6 +237,15 @@ Key Topics:
 - Application pipelines: `dotnet test`, container build, Cosign signing, push to ACR, deploy to AKS via Helm or Argo Rollouts.
 - Observability: OpenTelemetry SDK + Collector, Azure Monitor, Application Insights, Log Analytics, Azure Managed Grafana, Azure Managed Prometheus.
 - Reliability practice: SLI/SLO definition, error budgets, runbooks, basic chaos engineering with Azure Chaos Studio.
+
+Topic Projects:
+- (Pipelines) Build a GitHub Actions workflow: `dotnet test` → container build with BuildKit → Cosign sign → push to ACR → deploy to AKS — gated on a passing CodeQL scan, completing in under 10 minutes.
+- (Supply-chain security) Enable GitHub Advanced Security on a repository; triage CodeQL findings; add Dependabot for patch PRs; attach an SLSA provenance attestation to a container build artefact.
+- (Developer experience) Configure GitHub Copilot for DevOps to generate PR summaries and failure triage notes; evaluate time saved on a sample PR workflow.
+- (IaC pipelines) Add a `terraform plan` cost-impact summary comment to every infra PR using the Infracost GitHub Action; verify engineers see estimated cost impact before merging.
+- (Application pipelines) Create a GitHub Actions workflow that runs `dotnet test`, builds and signs a container, pushes to ACR, deploys to AKS via Helm, and runs a smoke test — with automatic rollback on failure.
+- (Observability) Instrument a .NET 10 app with the OpenTelemetry SDK; verify traces, metrics, and logs appear correlated in Application Insights and Managed Grafana.
+- (Reliability practice) Define SLIs and SLOs for a deployed service; configure Azure Monitor burn-rate alerts; run an Azure Chaos Studio CPU-pressure fault and verify the error budget is visibly consumed.
 
 Architect Skills:
 - Choosing a branching + environment promotion strategy (trunk-based vs GitFlow vs release branches) per team maturity.

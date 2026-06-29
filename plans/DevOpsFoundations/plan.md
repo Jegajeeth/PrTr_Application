@@ -33,6 +33,17 @@ Key Topics:
 - Disk + filesystem: lsblk, df / du, mount, fstab, LVM basics, ext4 vs xfs.
 - Logging: journalctl, /var/log, log rotation with logrotate.
 
+Topic Projects:
+- (Distributions) Install Ubuntu 24.04 LTS in WSL 2 and on a cloud VM; compare package availability across `apt` vs `dnf`; document which distribution is appropriate for a web server, database server, and container host.
+- (Filesystem hierarchy) Write a script that audits a system for configuration files placed in non-standard FHS locations and outputs a remediation report.
+- (Permissions) Set up a web server directory with correct ownership, the setgid bit, and ACLs for a 3-person development team; verify with `getfacl` and a second-user write test.
+- (Process management) Use htop and btop to diagnose a simulated runaway CPU process; document the detection-to-termination steps and a post-mortem analysis.
+- (Package management) Install the same tool via apt, snap, and flatpak; compare installed paths, isolation level, and auto-update behaviour; document when to prefer each.
+- (Service management) Convert a manually-started shell script into a proper systemd unit with dependency ordering, restart-on-failure, and journald logging; verify it survives a reboot.
+- (Users, groups, sudoers, SSH) Harden a fresh VM: create a non-root sudo user, disable password authentication, configure SSH key-only login on a non-default port, and install fail2ban.
+- (Disk + filesystem) Add a 10 GB virtual disk to a running VM using LVM; create a PV, VG, and LV; format as ext4; add to fstab; verify automatic remounting after reboot.
+- (Logging) Configure centralised log forwarding from a VM using Promtail to Loki; run a structured query with journalctl filters for a specific systemd unit over the past 24 hours.
+
 Architect Skills:
 - Reading man pages and `--help` output fluently — refusing to copy-paste blindly from Stack Overflow.
 - Reasoning about idempotency and side-effects in admin operations.
@@ -77,6 +88,15 @@ Key Topics:
 - Diagnostic tools: ping, traceroute / mtr, dig / nslookup, ss / netstat, tcpdump, iptables / nftables basics, curl with timing flags.
 - TLS: openssl s_client, certificate chains, SNI, mTLS basics.
 - HTTP debugging: curl, httpie, basic understanding of HTTP/2 and HTTP/3 (QUIC).
+
+Topic Projects:
+- (Bash scripting) Write a deployment script (`set -euo pipefail`) that copies a binary to a server, runs a health check endpoint, and rolls back automatically on failure; validate it with ShellCheck.
+- (Text processing) Write a one-liner using grep, awk, sort, and uniq to extract the top-10 most frequent IP addresses from an nginx access log file with a million entries.
+- (Pipelines and process substitution) Parallelise 5 independent download tasks using background jobs and `wait`; compare wall-clock time vs. the sequential version.
+- (Networking) Use `ip`, `ss`, `dig`, and `mtr` to diagnose a simulated "service unreachable" scenario (wrong DNS, firewall block, or port mismatch); document the diagnostic decision tree.
+- (Diagnostic tools) Capture a tcpdump trace of a full HTTPS handshake; identify the ClientHello, ServerHello, and certificate exchange packets in the capture.
+- (TLS) Use `openssl s_client` to verify the certificate chain, expiry date, and cipher suite of 3 different HTTPS endpoints; document any configuration issues found.
+- (HTTP debugging) Benchmark an HTTP endpoint using curl's timing breakdown flags (DNS, connect, TLS, TTFB, transfer); identify and document the slowest phase for 3 different servers.
 
 Architect Skills:
 - Knowing when bash is the right tool vs reaching for Python / Go.
@@ -124,6 +144,16 @@ Key Topics:
 - Trunk-based development vs GitFlow vs release branches.
 - Open source contribution etiquette: fork, PR description, DCO, semantic versioning, changelogs.
 
+Topic Projects:
+- (Git internals) Use `git cat-file` and `git ls-tree` to inspect the object store of a repository; draw the full object graph for a 3-commit history showing blobs, trees, and commits.
+- (Daily workflow) Practise a rebase-based workflow: create a feature branch with 3 commits, rebase interactively onto an updated main, squash into 1 clean commit, and push with `--force-with-lease`.
+- (Advanced Git) Use `git bisect run` to automatically find the commit that introduced a test failure in a 50-commit test repository; document the bisect session steps.
+- (Recovery) Simulate and recover from three disaster scenarios: accidental `git reset --hard`, a deleted branch, and a force-pushed remote — using only `git reflog` and `git fsck`.
+- (Hooks) Set up the pre-commit framework on a repository with hooks for ShellCheck, markdownlint, and conventional-commit title validation; verify each hook triggers on a matching violation.
+- (GitHub) Configure branch protection on a repository requiring 2 approvals, passing CI, and signed commits; demonstrate a PR being blocked by each rule individually.
+- (Trunk-based development) Convert an existing project with a long-lived feature branch to trunk-based development with feature flags; document the migration process and the safest merge cadence.
+- (Open source contribution) Submit a pull request to a real open-source project; document the process from fork through merge including how you addressed reviewer feedback.
+
 Architect Skills:
 - Designing a branching + release strategy that matches team size and release cadence.
 - Writing commit messages and PR descriptions that future-you can read in two years.
@@ -168,6 +198,17 @@ Key Topics:
 - Docker Compose v2 (compose.yaml): services, depends_on with conditions, profiles, networks, secrets, watch mode for dev.
 - Compose for development environments: hot-reload, debugger attachment, test execution.
 - Registry: Docker Hub, GitHub Container Registry (ghcr.io), self-hosted (Harbor, distribution/registry).
+
+Topic Projects:
+- (Container concepts) Use `nsenter` and the `/sys/fs/cgroup` filesystem to inspect a running container's namespace isolation and resource limits directly on the host without entering the container.
+- (Docker Engine) Run the same application in rootless Docker and standard Docker; compare network behaviour, file ownership inside the container, and the resulting security posture.
+- (Dockerfiles) Optimise an existing Dockerfile by reordering layers to maximise BuildKit cache hits on a CI runner; measure and document the build time improvement.
+- (BuildKit features) Build a multi-platform image (`linux/amd64` + `linux/arm64`) from a single Dockerfile using `docker buildx`; verify both platforms produce the correct output.
+- (Image hygiene) Scan a chosen base image with Trivy; patch all HIGH/CRITICAL CVEs by upgrading the base image or pinning affected packages; re-scan and confirm a clean result.
+- (Runtime) Apply CPU and memory limits to a running container; use `docker stats` to confirm enforcement under an artificial load generator (`stress-ng`).
+- (Docker Compose v2) Add `watch` mode configuration to a Compose stack so that source-code changes in the API service trigger a live container update without a full restart.
+- (Compose for development) Create a `make dev` target that spins up the full stack, seeds a Postgres database, and attaches a debugger to the backend service.
+- (Registry) Set up a self-hosted Harbor registry; push an image; scan it with Harbor's built-in Trivy integration; configure a policy to block images with CRITICAL CVEs from being pulled.
 
 Architect Skills:
 - Choosing between Docker, Podman, and nerdctl based on platform and security posture.
@@ -215,6 +256,18 @@ Key Topics:
 - Monitoring & observability basics: Prometheus + Grafana on a VM, node_exporter, blackbox_exporter, Loki for logs, Alertmanager rules.
 - Logging stacks: Loki+Promtail vs Elastic+Filebeat vs OpenSearch — the trade-offs.
 - Infrastructure cost awareness: tagging, budget alerts, FinOps basics (carries forward to cloud phases).
+
+Topic Projects:
+- (Build orchestration) Write a `Makefile` with phased targets (lint, test, build, deploy) where each stage caches its output and only re-runs when its inputs change.
+- (Configuration management) Write an Ansible role that installs and configures nginx with TLS on Ubuntu 24.04; test it with Molecule against a Docker container and verify idempotency on re-run.
+- (Secrets management) Deploy HashiCorp Vault in dev mode; store a database credential in the KV engine; retrieve it from a shell script using AppRole authentication via the Vault CLI.
+- (CI/CD platforms) Migrate a Jenkins pipeline to an equivalent GitHub Actions workflow; document capability gaps and improvements observed during the migration.
+- (Pipeline design) Implement OIDC-based GitHub Actions authentication to Azure without any static service principal secrets; verify by deploying a resource and checking the Azure audit log.
+- (Artefact management) Configure Renovate to automatically open PRs for out-of-date dependencies in a repository; triage and merge the first 5 automated dependency update PRs.
+- (Quality gates) Add a mutation testing step (Stryker for .NET or mutmut for Python) to a CI pipeline; set a minimum mutation score threshold that fails the build if not met.
+- (Monitoring & observability basics) Deploy Prometheus, Grafana, and node_exporter on a VM; create a dashboard showing node CPU, memory, and disk with an alert that fires on >80% disk usage.
+- (Logging stacks) Deploy Loki + Promtail + Grafana; compare structured log query latency vs. an Elasticsearch + Filebeat stack on the same 10 GB log dataset; document the operational trade-offs.
+- (Infrastructure cost awareness) Tag all resources in an Azure subscription by team and environment; create a Cost Management budget alert; produce a weekly cost-by-tag summary report.
 
 Architect Skills:
 - Designing a release pipeline that fails fast and gives engineers clear feedback within 10 minutes.
