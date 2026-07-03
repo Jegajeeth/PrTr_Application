@@ -20,6 +20,12 @@ Key Topics:
 - <Category>: <Description of tools, concepts, or skills covered.>
 - <Category>: <Description of tools, concepts, or skills covered.>
 
+Topic Projects:
+- <Category>: <Simple project to check the understanding of the key topic.>
+- <Category>: <Simple project to check the understanding of the key topic.>
+- <Category>: <Simple project to check the understanding of the key topic.>
+
+
 Architect Skills:
 - <Trade-off analysis, cost modelling, governance, or other architect-level competency.>
 - <e.g. Well-Architected pillar focus, decision documentation, risk assessment.>
@@ -62,6 +68,11 @@ Key Topics:
 - <Category>: <Description.>
 - <Category>: <Description.>
 
+Topic Projects:
+- <Category>: <Description.>
+- <Category>: <Description.>
+- <Category>: <Description.>
+
 Architect Skills:
 - <Architect-level competency.>
 - <Architect-level competency.>
@@ -97,6 +108,7 @@ trailing colon required). Anything else is appended to the previous section:
   Prerequisites:         (single paragraph)
   Time Commitment:       (single line)
   Key Topics:            (bullet list — each "- " becomes a checkable topic)
+  Topic Projects:        (bullet list — each "- " becomes a checkable topic)
   Architect Skills:      (bullet list)
   Target Certification:  (single paragraph)
   Small Project:         (single paragraph)

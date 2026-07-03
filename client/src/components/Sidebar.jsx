@@ -1,14 +1,24 @@
-import { useEffect, useState } from 'react';
-import { fetchPlans } from '../api';
+import { useEffect, useState } from "react";
+
+import { fetchPlans } from "../api";
+import { getCache, setCache } from "../hooks/useSessionCache";
 
 export default function Sidebar({ selectedPlan, onSelect }) {
   const [plans, setPlans] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const cached = getCache("plans_list");
+    if (cached) {
+      setPlans(cached);
+      return;
+    }
     fetchPlans()
-      .then(setPlans)
-      .catch(() => setError('Could not load plans. Is the server running?'));
+      .then((data) => {
+        setCache("plans_list", data);
+        setPlans(data);
+      })
+      .catch(() => setError("Could not load plans. Is the server running?"));
   }, []);
 
   if (error) return <div className="sidebar-error">{error}</div>;
@@ -20,7 +30,7 @@ export default function Sidebar({ selectedPlan, onSelect }) {
         {plans.map((plan) => (
           <li
             key={plan}
-            className={`sidebar-item ${selectedPlan === plan ? 'active' : ''}`}
+            className={`sidebar-item ${selectedPlan === plan ? "active" : ""}`}
             onClick={() => onSelect(plan)}
           >
             {plan}
