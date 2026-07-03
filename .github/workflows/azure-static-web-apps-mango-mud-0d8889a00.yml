@@ -1,6 +1,9 @@
 name: Azure Static Web Apps CI/CD
 
 on:
+  workflow_dispatch:
+    deploy_frontend:
+      description: "Deploy the frontend to the azure static web app"
   push:
     branches:
       - feature/functionappvertion
