@@ -1,0 +1,312 @@
+# Gen AI path (engineer mentor) + business scenarios (owner lens)
+
+Two views: **how to build** (skills + system design) and **what to build** (intermediate → advanced business problems).
+
+---
+
+## Part 1: Software engineer path — Gen AI + system design
+
+### Phase 0 — Foundations (4–6 weeks)
+
+**Goal:** Speak the language before shipping.
+
+| Area | What to learn | Why it matters |
+|------|---------------|----------------|
+| **LLM basics** | Tokens, context windows, temperature, top-p, embeddings | Every design decision starts here |
+| **Prompt engineering** | Zero/few-shot, chain-of-thought, structured output (JSON/schema) | Cheap lever before fine-tuning |
+| **Python + APIs** | OpenAI/Anthropic/Azure OpenAI SDK, async HTTP | Most Gen AI stacks are API-first |
+| **Vector basics** | Embeddings, cosine similarity, chunking | RAG backbone |
+
+**Mini-project:** CLI that answers questions from a PDF using embeddings + a vector store (Chroma, FAISS, or Azure AI Search).
+
+---
+
+### Phase 1 — Core patterns (6–8 weeks)
+
+**Goal:** Know the 5 patterns that cover ~80% of production Gen AI.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  1. RAG          — retrieve context, then generate       │
+│  2. Agents       — LLM + tools + planning loop           │
+│  3. Fine-tuning  — domain tone, classification, extraction│
+│  4. Multimodal   — vision, audio, documents              │
+│  5. Eval + guardrails — quality, safety, cost control    │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Deep dives:**
+
+1. **RAG (Retrieval-Augmented Generation)**
+   - Chunking strategies (fixed, semantic, parent-child)
+   - Hybrid search (keyword + vector)
+   - Re-ranking (cross-encoder or LLM re-rank)
+   - Citation / grounding to reduce hallucination
+
+2. **Agents & tool use**
+   - ReAct, function calling, MCP (Model Context Protocol)
+   - When agents help vs. when a simple pipeline is enough
+
+3. **Structured outputs**
+   - Pydantic / JSON schema enforcement
+   - Extraction, classification, entity resolution
+
+4. **Evaluation (often skipped — don’t)**
+   - Golden datasets, LLM-as-judge (with human spot-checks)
+   - Metrics: faithfulness, relevance, latency, cost per query
+
+**Mini-project:** Multi-doc RAG with citations, hybrid search, and a small eval suite (20–50 Q&A pairs).
+
+---
+
+### Phase 2 — System design for Gen AI (8–10 weeks)
+
+**Goal:** Design systems that survive real traffic, cost, and failure modes.
+
+#### Architecture layers
+
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   Client     │────▶│  API Gateway │────▶│  Orchestrator│
+│  (Web/Mobile)│     │  + Auth      │     │  (LangGraph, │
+└──────────────┘     └──────────────┘     │   custom)    │
+                                          └──────┬───────┘
+                    ┌────────────────────────────┼────────────────────────────┐
+                    ▼                            ▼                            ▼
+            ┌──────────────┐            ┌──────────────┐            ┌──────────────┐
+            │ Vector DB    │            │ LLM Provider │            │ Tool Layer   │
+            │ + Metadata   │            │ (multi-model)│            │ (DB, APIs,   │
+            │   filters    │            │              │            │  search)     │
+            └──────────────┘            └──────────────┘            └──────────────┘
+```
+
+#### Concepts to master
+
+| Concept | What it solves |
+|---------|----------------|
+| **Orchestration** | LangGraph, CrewAI, custom state machines — multi-step flows with retries |
+| **Caching** | Semantic cache (similar queries → same answer), prompt cache |
+| **Model routing** | Small model for easy tasks, large for hard; fallback chains |
+| **Observability** | LangSmith, Phoenix, OpenTelemetry — trace every LLM call |
+| **Guardrails** | Input/output filters, PII redaction, jailbreak detection |
+| **Cost control** | Token budgets, streaming, batching, summarization of context |
+| **Multi-tenancy** | Per-tenant indexes, quotas, data isolation |
+
+#### Design patterns (interview + production)
+
+1. **Router pattern** — classify intent → route to specialized handler  
+2. **Map-reduce** — chunk large docs, summarize in parallel, merge  
+3. **Human-in-the-loop** — low confidence → queue for review  
+4. **Async job queue** — long tasks (report gen, bulk extraction) off the request path  
+5. **Event-driven** — document uploaded → embed → index (decouple ingest from query)
+
+**Capstone:** Production-style app: auth, rate limits, observability, eval dashboard, deploy on Azure/AWS.
+
+---
+
+### Phase 3 — Advanced (ongoing)
+
+| Topic | When you need it |
+|-------|------------------|
+| **Fine-tuning / LoRA** | Domain jargon, consistent format, cheaper inference at scale |
+| **Multimodal** | Invoices, forms, images, video summaries |
+| **Agentic workflows** | Multi-step research, code gen, ops automation |
+| **RAG 2.0** | GraphRAG, agentic RAG, self-correcting retrieval |
+| **MCP & tool ecosystems** | Standardized tool interfaces for agents |
+| **SLM + edge** | On-device, privacy, latency-sensitive |
+| **Responsible AI** | Bias, explainability, audit trails |
+
+**Stack to know (2025–2026):**
+
+- **Orchestration:** LangGraph, Semantic Kernel, custom FastAPI  
+- **Vector:** Pinecone, Weaviate, Azure AI Search, pgvector  
+- **Observability:** LangSmith, Arize Phoenix, Datadog LLM monitoring  
+- **Deploy:** Azure Container Apps, AKS, serverless (Functions)  
+- **Auth:** Azure AD / Entra ID (OIDC, MSAL)
+
+---
+
+### Suggested 6-month roadmap
+
+| Month | Focus | Deliverable |
+|-------|--------|-------------|
+| 1 | LLM APIs + embeddings + basic RAG | PDF Q&A bot |
+| 2 | RAG depth + eval | RAG with citations + eval suite |
+| 3 | Agents + tools | Agent that uses APIs + DB |
+| 4 | System design | Auth, caching, observability, deploy |
+| 5 | Domain project | Pick one business scenario below |
+| 6 | Polish + portfolio | Docs, demo, cost/latency benchmarks |
+
+---
+
+## Part 2: Business owner — intermediate → advanced scenarios
+
+These map to the engineer path above. **Intermediate** = clear ROI, 3–6 month build. **Advanced** = multi-system, agents, compliance, scale.
+
+---
+
+### Intermediate scale (single domain, measurable ROI)
+
+#### 1. Intelligent document processing (IDP)
+
+**Problem:** Contracts, invoices, claims, applications — manual review is slow and inconsistent.
+
+**AI approach:** Multimodal extraction + structured output + human review queue.
+
+```
+Upload → OCR/Vision → Extract fields → Validate rules → Approve / flag
+```
+
+**Business value:** 60–80% faster processing; fewer errors.  
+**Engineer patterns:** Structured output, validation rules, HITL, audit log.
+
+---
+
+#### 2. Internal knowledge assistant (enterprise RAG)
+
+**Problem:** Policies, SOPs, product docs scattered; support and ops waste time searching.
+
+**AI approach:** RAG over SharePoint/Confluence/docs with citations and access control.
+
+**Business value:** Faster onboarding; fewer “who do I ask?” tickets.  
+**Engineer patterns:** Hybrid search, metadata filters, per-team indexes, eval on real questions.
+
+---
+
+#### 3. Customer support copilot (not full auto-reply)
+
+**Problem:** Agents repeat answers; quality varies; long handle time.
+
+**AI approach:** Suggest replies from KB + ticket history; agent edits and sends.
+
+**Business value:** Shorter AHT, more consistent tone, easier training.  
+**Engineer patterns:** RAG + tone control; no auto-send without approval at first.
+
+---
+
+#### 4. Sales enablement — proposal & RFP assistant
+
+**Problem:** RFPs and proposals take days; reuse is ad hoc.
+
+**AI approach:** RAG over past wins + product sheets; draft sections with citations.
+
+**Business value:** Faster turnaround; higher win rate on repeat questions.  
+**Engineer patterns:** Template + variable slots, citation grounding, version control.
+
+---
+
+#### 5. Code / ops documentation generator
+
+**Problem:** Docs drift from code; incidents lack runbooks.
+
+**AI approach:** Index repos + tickets; generate/update runbooks and API docs.
+
+**Business value:** Less tribal knowledge; faster incident response.  
+**Engineer patterns:** Scheduled indexing, diff-aware updates, human approval.
+
+---
+
+### Advanced scale (multi-system, agents, compliance, scale)
+
+#### 6. Autonomous research & competitive intelligence
+
+**Problem:** Market, competitor, and regulatory changes need continuous monitoring.
+
+**AI approach:** Agent pipeline: search → scrape/summarize → structured report → alert on deltas.
+
+```
+Trigger (schedule/event) → Agent gathers sources → Synthesize → Dashboard + alerts
+```
+
+**Business value:** Strategic decisions on fresher data; less analyst grunt work.  
+**Engineer patterns:** Multi-agent orchestration, source attribution, rate limits, fact-check loops.
+
+---
+
+#### 7. Multi-step workflow automation (agentic ops)
+
+**Problem:** Cross-system workflows (CRM → ERP → email → approval) are manual and error-prone.
+
+**AI approach:** Agent with tools (APIs, DB, email) executes steps with checkpoints and rollback.
+
+**Business value:** End-to-end automation with human gates only where needed.  
+**Engineer patterns:** Tool use, idempotency, audit trail, Entra-scoped permissions.
+
+---
+
+#### 8. Predictive maintenance + Gen AI explanations
+
+**Problem:** IoT/sensor alerts flood ops; root cause analysis is slow.
+
+**AI approach:** ML for anomaly detection + LLM for natural-language RCA and work orders.
+
+**Business value:** Less downtime; clearer actions for field teams.  
+**Engineer patterns:** ML + RAG over manuals; streaming alerts; integration with CMMS.
+
+---
+
+#### 9. Regulated industry — compliance & audit assistant
+
+**Problem:** Regulations change; proving compliance across docs and processes is expensive.
+
+**AI approach:** RAG over regulations + internal policies; gap analysis; audit-ready summaries with citations.
+
+**Business value:** Faster audits; lower compliance risk.  
+**Engineer patterns:** Strict grounding, immutable audit logs, PII handling, role-based access.
+
+---
+
+#### 10. Personalization at scale (content + recommendations)
+
+**Problem:** One-size-fits-all marketing and product experiences underperform.
+
+**AI approach:** Embeddings for user/content; LLM for personalized copy within brand guardrails.
+
+**Business value:** Higher conversion and retention.  
+**Engineer patterns:** Feature store, A/B tests, guardrails, cost caps per user.
+
+---
+
+#### 11. Software development accelerator (internal platform)
+
+**Problem:** Teams repeat boilerplate, tests, and reviews; quality is uneven.
+
+**AI approach:** RAG over codebase + standards; agents for PR review, test gen, migration hints.
+
+**Business value:** Faster delivery with guardrails.  
+**Engineer patterns:** Repo indexing, CI integration, no auto-merge without policy.
+
+---
+
+#### 12. Multi-modal customer onboarding (KYC / intake)
+
+**Problem:** Onboarding needs ID, forms, and checks across channels.
+
+**AI approach:** Vision + extraction + policy rules + escalation to human.
+
+**Business value:** Faster onboarding; consistent fraud/risk signals.  
+**Engineer patterns:** Multimodal, structured validation, HITL, retention policies.
+
+---
+
+## How the two views connect
+
+| Business scenario | Engineer skills (from path) |
+|-------------------|----------------------------|
+| IDP, KYC | Structured output, multimodal, HITL |
+| Enterprise RAG, support copilot | RAG, hybrid search, eval, auth |
+| RFP / sales assistant | RAG, templates, citations |
+| Competitive intelligence | Agents, orchestration, attribution |
+| Workflow automation | Tool use, MCP, audit, idempotency |
+| Compliance assistant | Grounding, PII, audit logs |
+| Personalization | Embeddings, guardrails, A/B testing |
+
+---
+
+## Practical next steps
+
+**If you’re learning as an engineer:** Start Month 1 (PDF Q&A RAG), then pick **one** business scenario that matches your domain and rebuild it as the capstone.
+
+**If you’re choosing as a business owner:** Score scenarios on (1) pain severity, (2) data you already have, (3) regulatory sensitivity, (4) willingness to keep humans in the loop. **IDP**, **enterprise RAG**, and **support copilot** are usually the best first bets.
+
+Want a **detailed architecture** for one scenario (APIs, data model, cost estimate), or a **week-by-week syllabus** for the engineer track? Name the scenario or your stack (e.g. Azure + .NET).
