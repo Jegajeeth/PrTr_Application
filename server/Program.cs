@@ -49,7 +49,7 @@ app.MapGet("/api/plans", async (IBlobPlansRepository planRepo) =>
 });
 
 // GET /api/plans/{planId} — return parsed plan as structured JSON
-app.MapGet("/api/plans/{planId}", async (string planId, IBlobPlansRepository planRepo) =>
+app.MapGet("/api/plan/{planId}", async (string planId, IBlobPlansRepository planRepo) =>
 {
     var content = await planRepo.GetPlanContentAsync(planId);
     if (content is null)
@@ -60,14 +60,14 @@ app.MapGet("/api/plans/{planId}", async (string planId, IBlobPlansRepository pla
 });
 
 // GET /api/plans/{planId}/progress — return saved progress
-app.MapGet("/api/plans/{planId}/progress", async (string planId, ITableProgressRepository progressRepo) =>
+app.MapGet("/api/plan/{planId}/progress", async (string planId, ITableProgressRepository progressRepo) =>
 {
     var progress = await progressRepo.GetProgressAsync(planId);
     return Results.Ok(progress);
 });
 
 // POST /api/plans/{planId}/progress — save progress
-app.MapPost("/api/plans/{planId}/progress", async (string planId, HttpRequest request, ITableProgressRepository progressRepo) =>
+app.MapPost("/api/plan/{planId}/progress", async (string planId, HttpRequest request, ITableProgressRepository progressRepo) =>
 {
     using var reader = new StreamReader(request.Body);
     var json = await reader.ReadToEndAsync();
