@@ -1,0 +1,52 @@
+
+name: CICD-backend - deploy to Azure app service - progresstrackerbackend
+
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+        paths:
+            - 'server/**'
+            - '.github/workflows/CICD-backend.yml'
+
+env:
+    DotnetVersion: '10.0.x'
+    BackendCodeDirectory: './server'
+    OutputDirectory: output
+
+jobs:
+    build-and-deploy:
+        
+        runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Setuup dotnet environment
+              uses: actions/setup-dotnet@v3
+              with:
+                dotnet-version: ${{ env.DotnetVersion }}
+
+            - name: Resolve Project Dependencies Using Dotnet
+              shell: bash
+              run: | 
+                pushd './${{ env.BackendCodeDirectory }}'
+                dotnet build --configuration Release --output ./${{ env.OutputDirectory }}
+                popd
+
+            - name: Login to Azure
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D383A6E4F5264188BE00B3E9207B4A6C }}
+                tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B9DE7E85E5E54C5BB0FD793EAB439B84 }}
+                subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0C4FFB1D96A54303BBAF12933CF2A29C }}
+
+
+            - name: Deploy to Azure Web App
+              uses: azure/webapps-deploy@v2
+              with:
+                app-name: progresstrackerbackend
+                package: '${{ env.BackendCodeDirectory }}/${{ env.OutputDirectory }}'
